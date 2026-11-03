@@ -1,6 +1,10 @@
 cmake_minimum_required(VERSION 3.16.3...3.26)
 
-project(ants LANGUAGES CXX)
+project(ants LANGUAGES CXX CUDA)
+
+if(NOT DEFINED CMAKE_CUDA_ARCHITECTURES)
+  set(CMAKE_CUDA_ARCHITECTURES 89)
+endif()
 
 # Set the macOS SDK root
 if (CMAKE_SYSTEM_NAME STREQUAL "Darwin")
@@ -55,6 +59,7 @@ nanobind_add_module(
   lib
   NB_STATIC
   src/main.cpp
+  src/cudaRegistration.cu
   src/antscore/antsAffineInitializer.cxx
   src/antscore/antsApplyTransforms.cxx
   src/antscore/antsApplyTransformsToPoints.cxx
@@ -76,6 +81,7 @@ nanobind_add_module(
   src/antscore/TileImages.cxx
 )
 target_compile_options(lib PRIVATE -O3)
+set_target_properties(lib PROPERTIES CUDA_SEPARABLE_COMPILATION ON)
 target_link_libraries(lib PRIVATE ${ITK_LIBRARIES} antsUtilities registrationUtilities imageMathUtilities)
 
 # Install directive for scikit-build-core

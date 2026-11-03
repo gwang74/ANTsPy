@@ -1,24 +1,32 @@
 :: Converted with the help of https://daniel-sc.github.io/bash-shell-to-bat-converter/
-:: @echo off
+@echo off
 
 echo %USERPROFILE%
 
 :: create local ~/.antspy dir and move package data to it
-if not exist %USERPROFILE%\.antspy\ (
-  mkdir %USERPROFILE%\.antspy
+if not exist "%USERPROFILE%\.antspy\" (
+  mkdir "%USERPROFILE%\.antspy"
 )
-COPY data\* %USERPROFILE%\.antspy
+COPY data\* "%USERPROFILE%\.antspy\"
 
 :: clone ANTs and move all files into library directory
 SET antsgit=https://github.com/ANTsX/ANTs.git
 :: 2026-01-19
 SET antstag=b53aad349e6767de8e1d99a392f05a82b1bf2373
-echo "ANTS;%antstag%" REM UNKNOWN: {"type":"Redirect","op":{"text":">>","type":"dgreat"},"file":{"text":"./data/softwareVersions.csv","type":"Word"}}
+echo ANTS;%antstag% >> .\data\softwareVersions.csv
 cd src
-echo "123"
+
+:: Rebuild antscore when a previous failed build left only a partial copy.
+if exist "antscore\" (
+  if not exist "antscore\antsUtilities.cxx" (
+    rmdir /S /Q antscore
+  ) else if not exist "antscore\antsAffineInitializer.cxx" (
+    rmdir /S /Q antscore
+  )
+)
+
 :: if antscore doesnt exist, create it
 if not exist "antscore\" (
-  echo "2"
   git clone %antsgit% antsrepo
   mkdir antscore
   cd antsrepo
@@ -26,7 +34,6 @@ if not exist "antscore\" (
   :: check out right branch
   if exist ".git\" (
     git checkout main
-    git pull
     git checkout %antstag%
   )
   cd ..
@@ -38,7 +45,6 @@ if not exist "antscore\" (
   COPY  antsrepo\Tensor\* antscore\
   COPY  antsrepo\Temporary\* antscore\
   COPY  antsrepo\Utilities\* antscore\
-  echo "HERE"
 
   :: lil hack bc of stupid angled import bug in actual files
   :: cp ReadWriteData.h antscore/ReadWriteData.h

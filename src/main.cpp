@@ -38,6 +38,7 @@
 #include "simulateDisplacementField.cxx"
 #include "sliceImage.cxx"
 #include "SmoothImage.cxx"
+#include "cudaRegistration.cxx"
 #include "weingartenImageCurvature.cxx"
 
 #include "WRAP_antsAffineInitializer.cxx"
@@ -100,6 +101,7 @@ void local_sccaner(nb::module_ &);
 void local_simulateDisplacementField(nb::module_ &);
 void local_sliceImage(nb::module_ &);
 void local_SmoothImage(nb::module_ &);
+void wrap_cudaRegistration(nb::module_ &);
 void local_weingartenImageCurvature(nb::module_ &);
 
 void wrap_antsAffineInitializer(nb::module_ &);
@@ -161,6 +163,7 @@ NB_MODULE(lib, m) {
     local_simulateDisplacementField(m);
     local_sliceImage(m);
     local_SmoothImage(m);
+    wrap_cudaRegistration(m);
     local_weingartenImageCurvature(m);
 
     wrap_antsAffineInitializer(m);
